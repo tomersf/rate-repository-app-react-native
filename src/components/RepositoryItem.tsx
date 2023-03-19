@@ -1,4 +1,4 @@
-import { RepoItem } from "@/repos";
+import { RepoItem } from "../repos";
 import { Text, StyleSheet, View, Image } from "react-native";
 
 import theme from "../theme/theme";
