@@ -10,6 +10,10 @@ export interface RepoItem {
   ownerAvatarUrl: string;
 }
 
+export interface RepoResponse {
+  edges: { node: RepoItem }[];
+}
+
 const repos: RepoItem[] = [
   {
     id: "jaredpalmer.formik",
