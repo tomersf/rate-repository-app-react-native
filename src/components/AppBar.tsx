@@ -4,6 +4,8 @@ import Constants from "expo-constants";
 import theme from "../theme/theme";
 import { Link } from "react-router-native";
 import React from "react";
+import { useUserContext } from "../hooks/useUserContext";
+import useUser from "../hooks/useUser";
 
 const styles = StyleSheet.create({
   container: {
@@ -19,15 +21,23 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
+  const [user, signOut] = useUserContext();
+
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
         <Link to="/">
           <Text style={styles.item}>Repositories</Text>
         </Link>
-        <Link to="/sign">
-          <Text style={styles.item}>Sign in</Text>
-        </Link>
+        {user.username ? (
+          <Link to="/sign" onPress={async () => await signOut()}>
+            <Text style={styles.item}>Sign out</Text>
+          </Link>
+        ) : (
+          <Link to="/sign">
+            <Text style={styles.item}>Sign in</Text>
+          </Link>
+        )}
       </ScrollView>
     </View>
   );

@@ -19,7 +19,7 @@ const useRepositories = (): [RepoItems, FetchReposFn, isLoading] => {
       const repos = (result.data.repositories as RepoResponse).edges.map(
         (repo) => repo.node
       );
-      console.log(repos);
+      // console.log(repos);
       setRepositories(repos);
     }
   }, [result.loading]);

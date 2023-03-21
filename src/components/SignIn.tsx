@@ -106,7 +106,6 @@ const SignIn = () => {
     const { username, password } = values;
     try {
       const accessToken = await login({ username, password });
-      console.log(accessToken);
       if (accessToken) navigate("/");
     } catch (e) {
       if (e instanceof ApolloError) {
