@@ -1,31 +1,30 @@
 import { useState, useEffect } from "react";
-import { RepoItem, RepoResponse } from "../repos";
+import { useQuery } from "@apollo/client";
 
-type FetchReposFn = () => Promise<void>;
+import { RepoItem, RepoResponse } from "../interfaces/repos";
+import { GET_REPOSITORIES_QUERY } from "../graphql/queries";
+
+type FetchReposFn = () => void;
 type isLoading = boolean;
 type RepoItems = RepoItem[];
 
 const useRepositories = (): [RepoItems, FetchReposFn, isLoading] => {
   const [repositories, setRepositories] = useState<RepoItem[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const fetchRepositories = async () => {
-    setLoading(true);
-
-    // Replace the IP address part with your own IP address!
-    const response = await fetch(`http://192.168.1.18:5001/api/repositories`);
-    const json: RepoResponse = await response.json();
-    const repos: RepoItem[] = json.edges.map((repo) => repo.node);
-
-    setLoading(false);
-    setRepositories(repos);
-  };
+  const result = useQuery(GET_REPOSITORIES_QUERY, {
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
-    fetchRepositories();
-  }, []);
+    if (!result.loading && result.error === undefined) {
+      const repos = (result.data.repositories as RepoResponse).edges.map(
+        (repo) => repo.node
+      );
+      console.log(repos);
+      setRepositories(repos);
+    }
+  }, [result.loading]);
 
-  return [repositories, fetchRepositories, loading];
+  return [repositories, result.refetch, result.loading];
 };
 
 export default useRepositories;

@@ -1,8 +1,13 @@
 import { Formik } from "formik";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import * as yup from "yup";
+import { ApolloError } from "@apollo/client";
+import { useState } from "react";
+
+import useAuth from "../hooks/useAuth";
 import theme from "../theme/theme";
 import FormikTextInput from "./FormikTextInput";
+import { useNavigate } from "react-router-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,6 +35,11 @@ const styles = StyleSheet.create({
     color: theme.colors.secondary,
     textAlign: "center",
     fontSize: theme.fontSizes.subheading,
+  },
+  error: {
+    color: theme.colors.error,
+    fontSize: theme.fontSizes.subheading,
+    textAlign: "center",
   },
 });
 
@@ -87,18 +97,40 @@ const SignInForm = ({
 };
 
 const SignIn = () => {
-  const onSubmit = (values: FormikValues) => {
-    console.log(values);
+  const navigate = useNavigate();
+  const [, , login] = useAuth();
+  const [errorMessage, setErrorMessage] = useState("");
+  let timer: undefined | NodeJS.Timeout = undefined;
+
+  const onSubmit = async (values: FormikValues) => {
+    const { username, password } = values;
+    try {
+      const accessToken = await login({ username, password });
+      console.log(accessToken);
+      if (accessToken) navigate("/");
+    } catch (e) {
+      if (e instanceof ApolloError) {
+        if (e.message === errorMessage) return;
+        setErrorMessage(e.message);
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          setErrorMessage("");
+        }, 1000);
+      }
+    }
   };
 
   return (
-    <Formik
-      onSubmit={onSubmit}
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-    >
-      {({ handleSubmit }) => <SignInForm onSubmit={handleSubmit} />}
-    </Formik>
+    <>
+      <Formik
+        onSubmit={onSubmit}
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+      >
+        {({ handleSubmit }) => <SignInForm onSubmit={handleSubmit} />}
+      </Formik>
+      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+    </>
   );
 };
 
