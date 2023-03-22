@@ -29,7 +29,8 @@ export default {
     },
     extra: {
       ENV: process.env.ENV || "development",
-      BACKEND_BASE_URL: process.env.API_BASE_URL || "localhost:5001",
+      BACKEND_BASE_URL:
+        process.env.API_BASE_URL || "http://localhost:4000/graphql",
     },
   },
 };

@@ -4,7 +4,6 @@ import Constants from "expo-constants";
 import theme from "../theme/theme";
 import { Link } from "react-router-native";
 import React from "react";
-import { useUserContext } from "../hooks/useUserContext";
 import useUser from "../hooks/useUser";
 
 const styles = StyleSheet.create({
@@ -21,7 +20,9 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-  const [user, signOut] = useUserContext();
+  const [user, signOut] = useUser();
+
+  console.log(user);
 
   return (
     <View style={styles.container}>
